@@ -1,8 +1,46 @@
+import debounce from 'lodash.debounce';
+import {Notify} from 'notiflix';
 import './css/styles.css';
 import { fetchCountries } from './js/fetchCountries';
 import { refs } from './js/refs';
+import { clearCountryList, clearCountryInfo, renderCountryList} from './js/render-functions';
 
 const DEBOUNCE_DELAY = 300;
-fetchCountries().then(data => {
-    console.log(data);
-})
+refs.input.addEventListener('input', debounce(onInputSearch, DEBOUNCE_DELAY));
+
+function onInputSearch(event){
+    event.preventDefault();
+    const inputValue = event.target.value.trim();
+    if (!inputValue) {
+        clearCountryInfo();
+        clearCountryList();
+        return;
+    }
+
+    fetchCountries(inputValue)
+    .then(countries => {
+        if (countries.length > 10 ) {
+            clearCountryInfo();
+            clearCountryList();
+            Notify.info('Too many matches found. Please enter a more specific name');
+        }
+        if (countries.length >= 2 && countries.length <= 10) {
+            clearCountryInfo();
+            Notify.success('Hooray! We drow countries list');
+            renderCountryList()
+        }
+        if (countries.length === 1) {
+            clearCountryList();
+            Notify.success('This is your country!');
+        }
+        console.log(countries);
+    }).catch(error => {
+        clearCountryInfo();
+        clearCountryList();
+        Notify.failure('Oops, there is no country with that name');
+        console.log(error);
+    })
+}
+
+
+
