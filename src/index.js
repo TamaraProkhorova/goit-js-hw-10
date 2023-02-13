@@ -3,7 +3,7 @@ import {Notify} from 'notiflix';
 import './css/styles.css';
 import { fetchCountries } from './js/fetchCountries';
 import { refs } from './js/refs';
-import { clearCountryList, clearCountryInfo, renderCountryList} from './js/render-functions';
+import { clearCountryList, clearCountryInfo, renderCountryList, renderCountryInfo} from './js/render-functions';
 
 const DEBOUNCE_DELAY = 300;
 refs.input.addEventListener('input', debounce(onInputSearch, DEBOUNCE_DELAY));
@@ -26,12 +26,13 @@ function onInputSearch(event){
         }
         if (countries.length >= 2 && countries.length <= 10) {
             clearCountryInfo();
-            Notify.success('Hooray! We drow countries list');
-            renderCountryList()
+            // Notify.success('Hooray! We drow countries list');
+            renderCountryList(countries);
         }
         if (countries.length === 1) {
             clearCountryList();
-            Notify.success('This is your country!');
+            renderCountryInfo(countries);
+            // Notify.success('This is your country!');
         }
         console.log(countries);
     }).catch(error => {
@@ -41,6 +42,7 @@ function onInputSearch(event){
         console.log(error);
     })
 }
+
 
 
 
